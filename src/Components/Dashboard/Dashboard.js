@@ -4,6 +4,7 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import SendIcon from '@mui/icons-material/Send';
 import "./Dashboard.css";
+import {getMood} from "../../backend.js"
 
 // Sample music recommendation component
 const MusicRecommendation = () => {
@@ -54,14 +55,27 @@ const Chatbot = () => {
 
   const sendMessage = () => {
     if (message.trim()) {
-      setChatMessages([...chatMessages, { text: message, sender: "user" }]);
-      
+      const userMessage = { text: message, sender: "user" };
+  
+      // Update chat messages with the new user message
+      setChatMessages((prevMessages) => {
+        const newMessages = [...prevMessages, userMessage];
+        console.log("CHAT MESSAGE", userMessage);
+        getMood(userMessage);
+        
+        // Simulate bot response
+        setTimeout(() => {
+          setChatMessages((prevMessages) => [
+            ...prevMessages,
+            userMessage,
+            { text: "Hello! How can I assist you?", sender: "bot" }
+          ]);
+        }, 1000);
+        
+        return newMessages;
+      });
+  
       setMessage("");
-
-      // Simulate bot response
-      setTimeout(() => {
-        setChatMessages([...chatMessages, { text: message, sender: "user" }, { text: "Hello! How can I assist you?", sender: "bot" }]);
-      }, 1000);
     }
   };
 

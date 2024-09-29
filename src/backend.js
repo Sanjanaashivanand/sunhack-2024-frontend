@@ -60,35 +60,14 @@ export const getSongs = async (playlistIds, token) =>  {
 }
 
 export const getMood = async (message) => {
+  console.log("getting AI response")
   await fetch('http://localhost:5000/chatbot', {
                 method: "POST", 
                 headers: {"Content-Type": "application/json"}, 
-                body: JSON.stringify({message: message})
+                body: JSON.stringify(message)
               })
               .then(response => response.json())
               .then(data => console.log(data))
               .catch((error) => console.error('Error:', error));
 
 }
-
-
-/*
-chatbotButton.addEventListener('click', function() {
-  const inputData = {
-    innerText: chatInput.innerTextValue
-  };
-  fetch('http://localhost:5000/chatbot', {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(inputData)})
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok ' + response.statusText);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log(data)
-        })
-        .catch(error => {
-            console.error('There was a problem getting the chatbot response:', error);
-        });
-});
-*/
