@@ -27,7 +27,7 @@ function Login() {
       window.location.hash = "";
       window.localStorage.setItem("token", token);
       setToken(token);
-      navigate("/dashboard");
+      navigate("/survey");
     } else {
       setToken(token);  // Set token if it exists in localStorage
     }

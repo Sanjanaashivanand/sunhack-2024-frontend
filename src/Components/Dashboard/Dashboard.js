@@ -4,6 +4,7 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import SendIcon from '@mui/icons-material/Send';
 import "./Dashboard.css";
+import { getMood } from "../../backend";
 
 // Sample music recommendation component
 const MusicRecommendation = () => {
@@ -55,7 +56,8 @@ const Chatbot = () => {
   const sendMessage = () => {
     if (message.trim()) {
       setChatMessages([...chatMessages, { text: message, sender: "user" }]);
-      
+      console.log("CHAT MESSAGE",chatMessages[chatMessages.length - 1])
+      getMood(chatMessages[chatMessages.length - 1])
       setMessage("");
 
       // Simulate bot response
