@@ -22,8 +22,11 @@ function Survey() {
     if (storedToken) {
         fetchUserProfile(storedToken)
         .then((data) => {
-            const playlistSongs = fetchPlaylist(storedToken);
-            getSongs(playlistSongs)
+            fetchPlaylist(storedToken)
+            .then((data)=>{
+              getSongs(data,storedToken)
+            })
+            
         })
         .catch((err) => {
             console.log(err)
