@@ -1,3 +1,8 @@
+a{
+    text-decoration: none;
+    color: white;
+}
+
 .Login{
         background-image: url('../../Assets/northern-lights.jpg');
         background-size: cover;
@@ -10,23 +15,53 @@
 }
 
 .login-page{
-    background-color: rgba( 0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 0.438);
     padding: 20px;
+    color: rgba(255, 255, 255, 0.728);
     text-align: center;
     border: 2px solid #07301e;
     border-radius: 10px;
-    box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+    box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
     width: 400px;
     height: 300px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-
 }
 
 .spotify-logo {
+    margin: 5px;
     width: 100px; /* Adjust size as needed */
     height: 100px;
-
 }
+
+.login-button {
+    background-color: #4CAF50; /* Green background */
+    margin-top: 10px;
+    border: none; /* Remove default border */
+    color: white; /* White text */
+    padding: 12px 24px; /* Padding for a more substantial feel */
+    text-align: center; /* Center text */
+    text-decoration: none; /* Remove underline */
+    display: inline-block; /* Make the button inline */
+    font-size: 16px; /* Font size */
+    font-family: 'Arial', sans-serif; /* Use a modern font */
+    font-weight: bold; /* Bold text */
+    border-radius: 8px; /* Rounded corners */
+    transition: all 0.3s ease; /* Smooth transition */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    cursor: pointer; /* Pointer on hover */
+}
+
+.login-button:hover {
+    background-color: #45a049; 
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15); 
+}
+
+.login-button:active {
+    background-color: #3e8e41; /* Even darker green when clicked */
+    transform: translateY(0); /* No lift when clicked */
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2); /* Pressed shadow */
+}
+

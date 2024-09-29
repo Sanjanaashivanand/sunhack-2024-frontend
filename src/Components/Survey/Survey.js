@@ -22,11 +22,19 @@ function Survey() {
     if (storedToken) {
         fetchUserProfile(storedToken)
         .then((data) => {
-            fetchPlaylist(storedToken)
-            .then((data)=>{
-              getSongs(data)
-            })
-            
+            setUserData(data)
+        })
+        .catch((err) => {
+            console.log(err)
+        })
+    }
+  }, []);  
+
+  useEffect(() => {
+    if (storedToken) {
+        fetchPlaylist(storedToken)
+        .then((data) => {
+            console.log("Playlists", data)
         })
         .catch((err) => {
             console.log(err)
