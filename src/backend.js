@@ -59,3 +59,15 @@ export const getSongs = async (playlistIds, token) =>  {
       .catch((error) => console.error('Error:', error));
 }
 
+export const getMood = async (message) => {
+  console.log("getting AI response")
+  await fetch('http://localhost:5000/chatbot', {
+                method: "POST", 
+                headers: {"Content-Type": "application/json"}, 
+                body: JSON.stringify(message)
+              })
+              .then(response => response.json())
+              .then(data => console.log(data))
+              .catch((error) => console.error('Error:', error));
+
+}
