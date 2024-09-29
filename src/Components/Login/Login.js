@@ -1,5 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';  // Ensure this is imported
+import React, { useState, useEffect } from 'react'
+import './Login.css'
+import spotifyLogo from '../../Assets/spotify-logo-240.png'
+
+
 
 function Login() {
   const CLIENT_ID = "ff957f1fb4f54a01a7252b40571c96e4";
@@ -36,22 +39,18 @@ function Login() {
     window.localStorage.removeItem("token");
   };
 
-  return (
-    <div className="Login">
-      <div className="login-page">
-        <h1>Spotify React</h1>
-        {!token ? (
-          <button>
-            <a href={`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}&scope=${SCOPES}`}>
-              Login to Spotify
-            </a>
-          </button>
-        ) : (
-          <button onClick={logout}>Logout</button>
-        )}
-      </div>
-    </div>
-  );
+    return (
+        <div className="Login">
+            <div className="login-page">
+                <h1>Spotify React</h1>
+                <img src={spotifyLogo} alt="Spotify Logo" className="spotify-logo" />
+                {!token ?
+                    <button><a href={`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}`}>Login
+                        to Spotify</a></button>
+                    : <button onClick={logout}>Logout</button>}
+            </div>
+        </div>
+    )
 }
 
 export default Login;

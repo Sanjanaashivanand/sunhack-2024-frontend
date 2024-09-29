@@ -1,27 +1,34 @@
 .survey {
-  background-color: white;
-  width: 400px;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  text-align: center;
+  background-image: url('../../Assets/cloud.png'); /* Set your cloud image here */
+    background-size: cover; /* Cover the entire container */
+    background-position: center; /* Center the image */
+    padding: 30px; /* Add padding for spacing */
+    width: 850px; /* Adjust width as necessary */
+    height: 500px; 
+    text-align: center; /* Center align text */
+    color: #333; /* Optional: Adjust text color for readability */
 }
-
+body {
+  margin: 0; /* Remove default margin to fit within the cloud */
+  padding: 0; /* Remove default padding */
+  background: rgb(187,208,255);
+  background: linear-gradient(90deg, rgba(187,208,255,1) 0%, rgba(213,199,254,1) 50%, rgba(231,198,255,1) 100%);
+}
 h2 {
-  margin-bottom: 20px;
+  margin-bottom: 180px;
   color: #4a4a4a;
 }
 
 h3 {
   color: #333;
-  margin-bottom: 15px;
-  font-size: 18px;
+  margin-bottom: 8px;
+  font-size: 30px;
 }
 
 input[type="text"], input[type="range"] {
-  width: 100%;
+  width: 20%;
   padding: 10px;
-  margin: 10px 0;
+  margin: 8px 5%;
   border: 1px solid #ddd;
   border-radius: 5px;
   font-size: 16px;
@@ -42,13 +49,13 @@ input[type="radio"] {
 .navigation {
   display: flex;
   justify-content: space-between;
-  margin-top: 20px;
+  margin-top: 30px;
 }
 
 button {
   padding: 10px 20px;
   border: none;
-  background-color: #4CAF50;
+  background-color: #ffff;
   color: white;
   border-radius: 5px;
   cursor: pointer;
