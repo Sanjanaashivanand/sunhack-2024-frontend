@@ -7,7 +7,7 @@ import SendIcon from '@mui/icons-material/Send';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import "./Dashboard.css";
-import { getInitial, refreshRecommendations } from "../../backend";
+import { getInitial, getMood, refreshRecommendations } from "../../backend";
 
 // Sample music recommendation component
 const MusicRecommendation = () => {
@@ -16,6 +16,7 @@ const MusicRecommendation = () => {
   const [likedSongs, setLikedSongs] = useState(
     JSON.parse(localStorage.getItem("likedSongs")) || []
   );
+  const [userMood, setUserMood] = useState();
 
   useEffect(() => {
     getInitial(4)
@@ -123,8 +124,12 @@ const Chatbot = () => {
   const sendMessage = () => {
     if (message.trim()) {
       setChatMessages([...chatMessages, { text: message, sender: "user" }]);
-      
       setMessage("");
+      getMood(4,message)
+      .then((data) => {
+        console.log("RECEIVED",data);
+
+      })
 
       // Simulate bot response
       setTimeout(() => {
