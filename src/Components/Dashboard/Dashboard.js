@@ -62,12 +62,25 @@ const Dashboard = () => {
       // Add user message to the chat
       setChatMessages([...chatMessages, { text: message, sender: "user" }]);
       setMessage("");
-
-      // Get user mood and alternate bot response
-      getMood(4, message).then((data) => {
-        setUserMood(data.mood);
-      });
-
+  
+      // Get user mood and handle possible errors
+      getMood(4, message)
+        .then((data) => {
+          // Check if data contains the 'mood' property
+          if (data && data.mood) {
+            setUserMood(data.mood);
+          } else {
+            // Fallback if mood is not returned
+            setUserMood("Neutral");
+            console.error("Mood property not found in response");
+          }
+        })
+        .catch((error) => {
+          // Handle any errors from the API call
+          setUserMood("Neutral");
+          console.error("Error fetching mood:", error);
+        });
+  
       setTimeout(() => {
         // Alternate the chatbot response based on the response count
         setChatMessages((prevMessages) => [
@@ -76,12 +89,13 @@ const Dashboard = () => {
             ? { text: "Hello! Tell me how you are feeling today, and I can curate a special playlist for you", sender: "bot" }
             : { text: "Sure, here are some recommendations. Please refresh!!", sender: "bot" }
         ]);
-
+  
         // Increment the response count after each bot message
         setResponseCount(prevCount => prevCount + 1);
       }, 1000);
     }
   };
+  
 
   return (
     <Grid
@@ -139,9 +153,11 @@ const Dashboard = () => {
                       <Typography variant="body2" color="textSecondary">{track.artist_name}</Typography>
                     </Box>
                     <Box display="flex" alignItems="center">
+                    <a href={`https://open.spotify.com/track/${track.track_id}`} target="_blank" rel="noopener noreferrer">
                       <IconButton onClick={() => handlePlayPause(track.track_id)}>
                         {isPlaying === track.track_id ? <PauseIcon /> : <PlayArrowIcon />}
                       </IconButton>
+                    </a>
                       <IconButton onClick={() => handleLikeToggle(track.track_id)}>
                         {likedSongs.includes(track.track_id) ? <FavoriteIcon /> : <FavoriteBorderIcon />}
                       </IconButton>
