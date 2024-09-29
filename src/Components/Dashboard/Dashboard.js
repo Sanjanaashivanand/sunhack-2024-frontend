@@ -55,6 +55,7 @@ const Chatbot = () => {
   const sendMessage = () => {
     if (message.trim()) {
       setChatMessages([...chatMessages, { text: message, sender: "user" }]);
+      
       setMessage("");
 
       // Simulate bot response

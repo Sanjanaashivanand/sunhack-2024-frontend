@@ -59,6 +59,18 @@ export const getSongs = async (playlistIds, token) =>  {
       .catch((error) => console.error('Error:', error));
 }
 
+export const getMood = async (message) => {
+  await fetch('http://localhost:5000/chatbot', {
+                method: "POST", 
+                headers: {"Content-Type": "application/json"}, 
+                body: JSON.stringify({message: message})
+              })
+              .then(response => response.json())
+              .then(data => console.log(data))
+              .catch((error) => console.error('Error:', error));
+
+}
+
 
 /*
 chatbotButton.addEventListener('click', function() {
