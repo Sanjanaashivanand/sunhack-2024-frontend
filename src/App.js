@@ -27,9 +27,10 @@ function App() {
           <div className='chat-container'>
             {/* Chatbot messages will go here */}
           </div>
-          <div className='chat-input'>
-            <input type='text' placeholder='What is on your mind?' />
-            <button>Send</button>
+          <div className='chat-input' id="chat-input">
+            {/*API endpoint needs to be added here to send to /chatbot*/}
+            <input type='text' placeholder='What is on your mind?' /> 
+            <button id="chatbot-button">Send</button>
           </div>
         </div>
       <Routes>
