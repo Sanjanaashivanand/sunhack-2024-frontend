@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react"; 
-import { Card, CardContent, Typography, IconButton, Grid, Box } from "@mui/material";
-import {TextField, Button } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Card, CardContent, Typography, IconButton, Button, TextField, Grid, Box } from "@mui/material";
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import SendIcon from '@mui/icons-material/Send';
@@ -9,28 +8,20 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import "./Dashboard.css";
 import { getInitial, getMood, refreshRecommendations } from "../../backend";
 
-// Sample music recommendation component
-const MusicRecommendation = () => {
+const Dashboard = () => {
   const [isPlaying, setIsPlaying] = useState(null);
   const [initialRecommendations, setInitialRecommendations] = useState([]);
-  const [likedSongs, setLikedSongs] = useState(
-    JSON.parse(localStorage.getItem("likedSongs")) || []
-  );
-  const [userMood, setUserMood] = useState();
+  const [likedSongs, setLikedSongs] = useState(JSON.parse(localStorage.getItem("likedSongs")) || []);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [message, setMessage] = useState("");
+  const [userMood, setUserMood] = useState("Neutral");
+  const [responseCount, setResponseCount] = useState(0);  // Keep track of bot responses
 
   useEffect(() => {
-    getInitial(4)
-    .then((data) => {
-      console.log("RECEIVED",data.initial_recommendations);
+    getInitial(20).then((data) => {
       setInitialRecommendations(data.initial_recommendations);
-    })
+    });
   }, []);
-
-  useEffect(() => {
-    if (likedSongs.length > 0) {
-      console.log("Liked Songs:", likedSongs);
-    }
-  }, [likedSongs]);
 
   useEffect(() => {
     localStorage.setItem("likedSongs", JSON.stringify(likedSongs));
@@ -42,146 +33,180 @@ const MusicRecommendation = () => {
 
   const handleLikeToggle = (id) => {
     if (likedSongs.includes(id)) {
-      setLikedSongs(likedSongs.filter(trackId => trackId !== id));  // Remove if already liked
+      setLikedSongs(likedSongs.filter(trackId => trackId !== id));
     } else {
       setLikedSongs([...likedSongs, id]);
     }
-    console.log(likedSongs)
   };
 
   const Refresh = async () => {
     if (likedSongs.length > 0) {
-      // Save liked songs to localStorage
-      localStorage.setItem("likedSongs", JSON.stringify(likedSongs));
-      
-      // Prepare feedback data
-      const user_id = 4;  // Example user_id
+      const user_id = 4;
       const feedback = likedSongs.map(songId => ({
         song_id: songId,
-        reward: 1,  // Assuming all liked songs have reward = 1
-        mood: 'Angry'  // Example mood, replace with dynamic mood if needed
+        reward: 1,
+        mood: userMood,
       }));
-      
+
       try {
-        // Call the refreshRecommendations function
         const data = await refreshRecommendations(user_id, feedback);
-        console.log("REFRESHED", data);
-        setInitialRecommendations(data.new_recommendations);   // Log the refreshed recommendations
+        setInitialRecommendations(data.new_recommendations);
       } catch (error) {
-        console.error("Error during refresh:", error);  // Handle any errors
+        console.error("Error during refresh:", error);
       }
-    } else {
-      console.log("No liked songs to refresh.");
     }
   };
-  
-  
-  
-
-  return (
-    <div className="music-recommendation">
-      
-      <Typography variant="h4" className="heading">Your recommended songs based on your current mood</Typography>
-      <Typography variant="h6" className="subheading">
-        Hit the like button, if the song resonates with your mood!
-      </Typography>
-      <Button 
-  variant="contained" 
-  color="primary" 
-  className="refresh-btn" 
-  onClick={() => Refresh()}
->
-  Refresh
-</Button>
-      <div className="recommendation-list">
-        {initialRecommendations.slice(0,5).map((track) => (
-          <Card key={track.track_id} className="track-card">
-            <CardContent className="track-content">
-              <div>
-                <Typography variant="h6" className="track-title">{track.track_name}</Typography>
-                <Typography variant="body2" color="textSecondary" className="track-artist">{track.artist_name}</Typography>
-              </div>
-              <IconButton onClick={() => handlePlayPause(track.track_id)} className="play-btn">
-                {isPlaying === track.track_id ? <PauseIcon /> : <PlayArrowIcon />}
-              </IconButton>
-              <IconButton onClick={() => handleLikeToggle(track.track_id)} className="heart-btn">
-                {/* Conditionally render heart or unheart based on liked state */}
-                {likedSongs.includes(track.track_id) ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-              </IconButton>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-// Simple chatbot component
-const Chatbot = () => {
-  const [chatMessages, setChatMessages] = useState([]);
-  const [message, setMessage] = useState("");
 
   const sendMessage = () => {
     if (message.trim()) {
+      // Add user message to the chat
       setChatMessages([...chatMessages, { text: message, sender: "user" }]);
       setMessage("");
-      getMood(4,message)
-      .then((data) => {
-        console.log("RECEIVED",data);
 
-      })
+      // Get user mood and alternate bot response
+      getMood(4, message).then((data) => {
+        setUserMood(data.mood);
+      });
 
-      // Simulate bot response
       setTimeout(() => {
-        setChatMessages([...chatMessages, { text: message, sender: "user" }, { text: "Hello! How can I assist you?", sender: "bot" }]);
+        // Alternate the chatbot response based on the response count
+        setChatMessages((prevMessages) => [
+          ...prevMessages,
+          responseCount % 2 === 0
+            ? { text: "Hello! Tell me how you are feeling today, and I can curate a special playlist for you", sender: "bot" }
+            : { text: "Sure, here are some recommendations. Please refresh!!", sender: "bot" }
+        ]);
+
+        // Increment the response count after each bot message
+        setResponseCount(prevCount => prevCount + 1);
       }, 1000);
     }
   };
 
   return (
-    <div className="chatbot">
-      <Typography variant="h6" className="chat-heading">Chat with MusicBot</Typography>
-      <div className="chat-messages">
-        {chatMessages.map((msg, index) => (
-          <div key={index} className={`chat-message ${msg.sender}`}>
-            {msg.text}
-          </div>
-        ))}
-      </div>
-      <div className="chat-input">
-        <TextField
-          variant="outlined"
-          placeholder="Type a message..."
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          className="chat-input-field"
-        />
-        <Button
-          onClick={sendMessage}
-          variant="contained"
-          color="primary"
-          className="send-btn"
-          endIcon={<SendIcon />}
+    <Grid
+      container
+      spacing={2}
+      style={{
+        height: '100vh',
+        margin: 0,
+        padding: '10px',
+        background: 'linear-gradient(90deg, rgba(187,208,255,1) 0%, rgba(213,199,254,1) 50%, rgba(231,198,255,1) 100%)',
+      }}
+    >
+      {/* Left Part - Music Recommendation */}
+      <Grid item xs={7} style={{ maxHeight: '100vh' }}>
+        <Typography variant="h4" style={{ marginBottom: '1rem', fontWeight: 'bold', color: '#4A4A4A' }}>
+          Your Recommended Songs
+        </Typography>
+        <Typography variant="subtitle1" style={{ marginBottom: '1rem', color: '#6D6D6D' }}>
+          Hit the like button if the song resonates with your mood!
+        </Typography>
+        <Box display="flex" justifyContent="flex-end" style={{ marginBottom: '1rem' }}>
+          <Button variant="contained" style={{backgroundColor: '#ff028d'}} onClick={Refresh}>Refresh</Button>
+        </Box>
+        
+        {/* Scrollable Box for Songs */}
+        <Box
+          style={{
+            maxHeight: '70vh', // Limit the height
+            overflowY: 'auto', // Enable vertical scroll
+            paddingRight: '10px', // To avoid the scrollbar overlapping content
+            scrollbarWidth: 'thin', // Smaller scrollbar for aesthetic
+          }}
         >
-          Send
-        </Button>
-      </div>
-    </div>
+          <Grid container spacing={2}>
+            {initialRecommendations.map((track) => (
+              <Grid item xs={6} key={track.track_id}>
+                <Card
+                  style={{
+                    backgroundColor: '#ffffff',
+                    color: '#333333',
+                    padding: '1rem',
+                    borderRadius: '20px', // Softer rounded corners
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)', // Soft shadow for depth
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    transition: 'transform 0.2s', // Smooth hover effect
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
+                  onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                >
+                  <CardContent style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                    <Box>
+                      <Typography variant="h6" style={{ fontWeight: 'bold' }}>{track.track_name}</Typography>
+                      <Typography variant="body2" color="textSecondary">{track.artist_name}</Typography>
+                    </Box>
+                    <Box display="flex" alignItems="center">
+                      <IconButton onClick={() => handlePlayPause(track.track_id)}>
+                        {isPlaying === track.track_id ? <PauseIcon /> : <PlayArrowIcon />}
+                      </IconButton>
+                      <IconButton onClick={() => handleLikeToggle(track.track_id)}>
+                        {likedSongs.includes(track.track_id) ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                      </IconButton>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+      </Grid>
+
+      {/* Right Part - Chatbot */}
+      <Grid item xs={5}>
+        <Box 
+          p={2} 
+          style={{ 
+            backgroundColor: 'rgba(0, 0, 0, 0.1)', 
+            borderRadius: '15px',
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between'
+          }}
+        >
+          <Typography variant="h6" gutterBottom>Chat with MusicBot</Typography>
+          <Box style={{ flexGrow: 1, overflowY: 'auto', padding: '1rem' }}>
+            {chatMessages.map((msg, index) => (
+              <Box
+                key={index}
+                mb={1}
+                p={1}
+                style={{
+                  backgroundColor: msg.sender === "user" ? "#2196f3" : "#eceff1",
+                  color: msg.sender === "user" ? "white" : "black",
+                  borderRadius: '10px',
+                  textAlign: msg.sender === "user" ? "right" : "left",
+                }}
+              >
+                {msg.text}
+              </Box>
+            ))}
+          </Box>
+          <Box display="flex" alignItems="center">
+            <TextField
+              variant="outlined"
+              placeholder="Type a message..."
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              fullWidth
+              style={{ marginRight: '0.5rem', backgroundColor: 'white' }}
+            />
+            <Button
+              onClick={sendMessage}
+              variant="contained"
+              style={{backgroundColor: '#ff028d'}}
+              endIcon={<SendIcon />}
+            >
+              Send
+            </Button>
+          </Box>
+        </Box>
+      </Grid>
+    </Grid>
   );
 };
-
-function Dashboard() {
-  return (
-    <div className="dashboard-container">
-      <div className="music-recommendation-container">
-        <MusicRecommendation />
-      </div>
-
-      <div className="chatbot-container">
-        <Chatbot />
-      </div>
-    </div>
-  );
-}
 
 export default Dashboard;

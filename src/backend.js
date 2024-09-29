@@ -46,7 +46,7 @@ export const fetchPlaylist = async (token) => {
 
 
 export const getSongs = async (playlistIds, token) =>  {
-    await fetch('http://127.0.0.1:5000/playlists', {
+    await fetch('http://54.190.49.173/playlists', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -63,7 +63,7 @@ export const getSongs = async (playlistIds, token) =>  {
 
 export const getInitial = async (user_id) => {
   try {
-    const response = await fetch('http://127.0.0.1:5000/recommendation/initial', {
+    const response = await fetch('http://54.190.49.173/recommendation/initial', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -96,7 +96,7 @@ export const getInitial = async (user_id) => {
 
 export const refreshRecommendations = async (user_id, feedback) => {
   try {
-    const response = await fetch('http://127.0.0.1:5000/recommendation/refresh', {
+    const response = await fetch('http://54.190.49.173/recommendation/refresh', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -122,15 +122,30 @@ export const refreshRecommendations = async (user_id, feedback) => {
 
 
 
-export const getMood = async (message) => {
-  console.log("getting AI response")
-  await fetch('http://localhost:5000/chatbot', {
-                method: "POST", 
-                headers: {"Content-Type": "application/json"}, 
-                body: JSON.stringify(message)
-              })
-              .then(response => response.json())
-              .then(data => console.log(data))
-              .catch((error) => console.error('Error:', error));
+export const getMood = async (user_id, message) => {
+  console.log("getting AI response");
 
-}
+  try {
+    const response = await fetch('http://localhost:5000/chatbot', {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        user_id: user_id,
+        text: message
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log(data);
+    
+    return data;
+  } catch (error) {
+    console.error('Error:', error);
+  }
+};

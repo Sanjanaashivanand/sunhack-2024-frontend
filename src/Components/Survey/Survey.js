@@ -54,7 +54,7 @@ function Survey() {
     e.preventDefault();
     setIsSubmitted(true);
     console.log("Survey submitted with responses: ", responses);
-    // Add submission logic here (e.g., send data to server)
+
   };
 
   const renderQuestion = (question, index) => {
