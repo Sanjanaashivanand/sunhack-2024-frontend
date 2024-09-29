@@ -24,7 +24,7 @@ function Survey() {
         .then((data) => {
             fetchPlaylist(storedToken)
             .then((data)=>{
-              getSongs(data,storedToken)
+              getSongs(data)
             })
             
         })
@@ -74,7 +74,7 @@ function Survey() {
 
   return (
     <div className="survey">
-      <h2></h2>
+      <h2>Survey</h2>
 
 
 
