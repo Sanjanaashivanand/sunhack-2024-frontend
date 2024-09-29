@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import './Survey.css';  // Import the CSS file
+import { fetchPlaylist, fetchUserProfile, getSongs } from "../../backend";
 
 function Survey() {
   const questions = [
@@ -7,10 +8,28 @@ function Survey() {
     { questionText: "How satisfied are you with our service?", type: "range" },
     { questionText: "Would you recommend us to others?", type: "radio", options: ["Yes", "No"] },
   ];
-
   const [currentSlide, setCurrentSlide] = useState(0);
   const [responses, setResponses] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  //GET USER ID
+  const [token, setToken] = useState("");
+  const [userData, setUserData] = useState({});
+  const [playlists, setPlaylists] = useState({})
+  const storedToken = window.localStorage.getItem("token");
+
+  useEffect(() => {
+    if (storedToken) {
+        fetchUserProfile(storedToken)
+        .then((data) => {
+            const playlistSongs = fetchPlaylist(storedToken);
+            getSongs(playlistSongs)
+        })
+        .catch((err) => {
+            console.log(err)
+        })
+    }
+  }, []);  
 
   const nextSlide = () => setCurrentSlide((prev) => Math.min(prev + 1, questions.length - 1));
   const prevSlide = () => setCurrentSlide((prev) => Math.max(prev - 1, 0));
@@ -54,8 +73,12 @@ function Survey() {
     <div className="survey">
       <h2>Survey</h2>
 
+
+
       {!isSubmitted ? (
         <div>
+            {/* {userData.display_name && 
+                <h1>Hello, {userData.display_name}</h1>} */}
           <div className="slide">
             <h3>{questions[currentSlide].questionText}</h3>
             {renderQuestion(questions[currentSlide], currentSlide)}
