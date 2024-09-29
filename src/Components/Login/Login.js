@@ -44,7 +44,7 @@ function Login() {
                 <h1>Spotify React</h1>
                 <img src={spotifyLogo} alt="Spotify Logo" className="spotify-logo" />
                 {!token ?
-                    <button className='login-button'><a href={`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}&scopes=${SCOPES}`}>Login
+                    <button className='login-button'><a href={`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}&scope=${SCOPES}`}>Login
                         to Spotify</a></button>
                     : <button className='login-button' onClick={logout}>Logout</button>}
             </div>
