@@ -24,7 +24,10 @@ const MusicRecommendation = () => {
 
   return (
     <div className="music-recommendation">
-      <Typography variant="h4" className="heading">Music For You</Typography>
+      <Typography variant="h4" className="heading">Your recommended songs based on your current mood</Typography>
+      <Typography variant="h6" className="subheading">
+        Hit the like button, if the song resonates with your mood!
+      </Typography>
       <div className="recommendation-list">
         {recommendations.map((track) => (
           <Card key={track.id} className="track-card">
