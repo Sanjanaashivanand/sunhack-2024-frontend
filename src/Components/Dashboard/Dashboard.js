@@ -41,7 +41,12 @@ const MusicRecommendation = () => {
       </Typography>
       <div className="recommendation-list">
         {recommendations.map((track) => (
-          <Card key={track.id} className="track-card">
+          <Card key={track.id} className="track-card" style={{ 
+            backgroundColor: '#bbd0ff58', 
+            color: '#333',
+            borderRadius: '20px',
+            margin: '10px 20px',
+            textAlign: 'left'}}>
             <CardContent className="track-content">
               <div>
                 <Typography variant="h6" className="track-title">{track.title}</Typography>

@@ -4,7 +4,7 @@ import spotifyLogo from '../../Assets/spotify-logo-240.png'
 import { useNavigate } from 'react-router-dom';
 
 function Login() {
-  const CLIENT_ID = "ff957f1fb4f54a01a7252b40571c96e4";
+  const CLIENT_ID = "811e4f846ac149f5aa937fe92c58617b";
   const CLIENT_SECRET = "e901e33fc5754d2a883bccb7cbd91e18";
   const REDIRECT_URI = "http://localhost:3000";  
   const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
