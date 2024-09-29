@@ -1,10 +1,13 @@
 .dashboard-container{
+    background-color: #bbd0ff;
     height: 100vh;
     width: 100vw;
     display: flex;
     justify-content: space-evenly;
     align-items: center;
 }
+
+
 
 .music-recommendation-container{
     width: 60%;
@@ -16,4 +19,65 @@
     margin-top: 5px;
     text-align: left;
     display: flex;
+    border-radius: 50px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    overflow: hidden;
+}
+.chatbot {
+    background: linear-gradient(90deg, rgba(187,208,255,1) 0%, rgba(213,199,254,1) 50%, rgba(231,198,255,1) 100%);
+    height: 100vh;
+    width: 300px; /* Adjust width as needed */
+    position: fixed;
+    top: 0;
+    right: 0;
+    background-color: #f0f0f0; /* Light grey background */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+}
+
+.chat-heading {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+}
+
+.chat-messages {
+    flex-grow: 1;
+    width: 90%;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
+.chat-message {
+    margin: 5px 0;
+    padding: 10px;
+    border-radius: 15px;
+}
+
+.user {
+    background-color: #d1e7ff; /* Light blue for user messages */
+    align-self: flex-end;
+}
+
+.bot {
+    background-color: #e2e3e5; /* Light grey for bot messages */
+    align-self: flex-start;
+}
+
+.chat-input {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+}
+
+.chat-input-field {
+    flex-grow: 1;
+    border-radius: 20px;
+    padding: 10px;
+}
+
+.send-btn {
+    margin-left: 10px;
 }
