@@ -1,24 +1,28 @@
-import React, { useState } from "react";
-import { Card, CardContent, Typography, IconButton, TextField, Button } from "@mui/material";
+import React, { useState } from "react"; 
+import { Card, CardContent, Typography, IconButton, Grid, Box } from "@mui/material";
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
-import SendIcon from '@mui/icons-material/Send';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import "./Dashboard.css";
-import {getMood} from "../../backend.js"
 
 // Sample music recommendation component
 const MusicRecommendation = () => {
   const [isPlaying, setIsPlaying] = useState(null);
   const [likedTracks, setLikedTracks] = useState([]);
-  // Sample music recommendations
+
+  // Updated recommendations with 10 songs
   const recommendations = [
     { id: 1, title: "Blinding Lights", artist: "The Weeknd" },
     { id: 2, title: "Levitating", artist: "Dua Lipa" },
     { id: 3, title: "Good 4 U", artist: "Olivia Rodrigo" },
     { id: 4, title: "Peaches", artist: "Justin Bieber" },
-    { id: 5, title: "Save Your Tears", artist: "The Weeknd" }
+    { id: 5, title: "Save Your Tears", artist: "The Weeknd" },
+    { id: 6, title: "Stay", artist: "The Kid LAROI & Justin Bieber" },
+    { id: 7, title: "Montero (Call Me By Your Name)", artist: "Lil Nas X" },
+    { id: 8, title: "Kiss Me More", artist: "Doja Cat ft. SZA" },
+    { id: 9, title: "Industry Baby", artist: "Lil Nas X & Jack Harlow" },
+    { id: 10, title: "Deja Vu", artist: "Olivia Rodrigo" }
   ];
 
   const handlePlayPause = (id) => {
@@ -27,121 +31,41 @@ const MusicRecommendation = () => {
 
   const handleLikeToggle = (id) => {
     if (likedTracks.includes(id)) {
-      setLikedTracks(likedTracks.filter(trackId => trackId !== id));  // Remove if already liked
+      setLikedTracks(likedTracks.filter(trackId => trackId !== id));
     } else {
-      setLikedTracks([...likedTracks, id]);  // Add if not liked
+      setLikedTracks([...likedTracks, id]);
     }
   };
 
   return (
-    <div className="music-recommendation">
-      <Typography variant="h4" className="heading">Your recommended songs based on your current mood</Typography>
-      <Typography variant="h6" className="subheading">
-        Hit the like button, if the song resonates with your mood!
-      </Typography>
-      <div className="recommendation-list">
+    <Box sx={{ textAlign: "center", margin: "20px" }}>
+      <Typography variant="h4" className="heading">Your Recommended Songs</Typography>
+      <Typography variant="body1" sx={{ marginBottom: 4 }}>Hit the like button if the song resonates with your mood!</Typography>
+      
+      <Grid container spacing={3} justifyContent="center">
         {recommendations.map((track) => (
-          <Card key={track.id} className="track-card" style={{ 
-            backgroundColor: '#bbd0ff58', 
-            color: '#333',
-            borderRadius: '20px',
-            margin: '10px 20px',
-            textAlign: 'left'}}>
-            <CardContent className="track-content">
-              <div>
-                <Typography variant="h6" className="track-title">{track.title}</Typography>
-                <Typography variant="body2" color="textSecondary" className="track-artist">{track.artist}</Typography>
-              </div>
-              <IconButton onClick={() => handlePlayPause(track.id)} className="play-btn">
-                {isPlaying === track.id ? <PauseIcon /> : <PlayArrowIcon />}
-              </IconButton>
-              <IconButton onClick={() => handleLikeToggle(track.id)} className="heart-btn">
-                {/* Conditionally render heart or unheart based on liked state */}
-                {likedTracks.includes(track.id) ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-              </IconButton>
-            </CardContent>
-          </Card>
+          <Grid item xs={12} sm={6} md={4} key={track.id}>
+            <Card sx={{ backgroundColor: '#bbd0ff58', borderRadius: '10px' }}>
+              <CardContent sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <Box>
+                  <Typography variant="h6">{track.title}</Typography>
+                  <Typography variant="body2" color="textSecondary">{track.artist}</Typography>
+                </Box>
+                <Box>
+                  <IconButton onClick={() => handlePlayPause(track.id)}>
+                    {isPlaying === track.id ? <PauseIcon /> : <PlayArrowIcon />}
+                  </IconButton>
+                  <IconButton onClick={() => handleLikeToggle(track.id)}>
+                    {likedTracks.includes(track.id) ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                  </IconButton>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
         ))}
-      </div>
-    </div>
+      </Grid>
+    </Box>
   );
 };
 
-// Simple chatbot component
-const Chatbot = () => {
-  const [chatMessages, setChatMessages] = useState([]);
-  const [message, setMessage] = useState("");
-
-  const sendMessage = () => {
-    if (message.trim()) {
-      const userMessage = { text: message, sender: "user" };
-  
-      // Update chat messages with the new user message
-      setChatMessages((prevMessages) => {
-        const newMessages = [...prevMessages, userMessage];
-        console.log("CHAT MESSAGE", userMessage);
-        getMood(userMessage);
-        
-        // Simulate bot response
-        setTimeout(() => {
-          setChatMessages((prevMessages) => [
-            ...prevMessages,
-            userMessage,
-            { text: "Hello! How can I assist you?", sender: "bot" }
-          ]);
-        }, 1000);
-        
-        return newMessages;
-      });
-  
-      setMessage("");
-    }
-  };
-
-  return (
-    <div className="chatbot">
-      <Typography variant="h6" className="chat-heading">Chat with MusicBot</Typography>
-      <div className="chat-messages">
-        {chatMessages.map((msg, index) => (
-          <div key={index} className={`chat-message ${msg.sender}`}>
-            {msg.text}
-          </div>
-        ))}
-      </div>
-      <div className="chat-input">
-        <TextField
-          variant="outlined"
-          placeholder="Type a message..."
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          className="chat-input-field"
-        />
-        <Button
-          onClick={sendMessage}
-          variant="contained"
-          color="primary"
-          className="send-btn"
-          endIcon={<SendIcon />}
-        >
-          Send
-        </Button>
-      </div>
-    </div>
-  );
-};
-
-function Dashboard() {
-  return (
-    <div className="dashboard-container">
-      <div className="music-recommendation-container">
-        <MusicRecommendation />
-      </div>
-
-      <div className="chatbot-container">
-        <Chatbot />
-      </div>
-    </div>
-  );
-}
-
-export default Dashboard;
+export default MusicRecommendation;
