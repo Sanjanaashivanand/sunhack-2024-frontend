@@ -3,7 +3,7 @@ import Login from './Components/Login/Login.js'
 import './App.css';
 import {Routes, Route, BrowserRouter as Router} from 'react-router-dom';
 import Survey from './Components/Survey/Survey.js';
-import playButton from './Assets/play-button.png';
+import Dashboard from './Components/Dashboard/Dashboard.js';
 
 function App() {
   return (
@@ -36,8 +36,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Login/>} />
         <Route path='/survey' element={<Survey/>}/>
+        <Route path='/dashboard' element={<Dashboard/>}/>
       </Routes>
-      </div>
     </Router>
   );
 }
