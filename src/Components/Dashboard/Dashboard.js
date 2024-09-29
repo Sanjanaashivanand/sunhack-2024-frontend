@@ -1,71 +1,183 @@
 import React, { useState } from "react"; 
 import { Card, CardContent, Typography, IconButton, Grid, Box } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Card, CardContent, Typography, IconButton, TextField, Button } from "@mui/material";
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
+import SendIcon from '@mui/icons-material/Send';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import "./Dashboard.css";
+import { getInitial, refreshRecommendations } from "../../backend";
 
 // Sample music recommendation component
 const MusicRecommendation = () => {
   const [isPlaying, setIsPlaying] = useState(null);
-  const [likedTracks, setLikedTracks] = useState([]);
+  const [initialRecommendations, setInitialRecommendations] = useState([]);
+  const [likedSongs, setLikedSongs] = useState(
+    JSON.parse(localStorage.getItem("likedSongs")) || []
+  );
 
-  // Updated recommendations with 10 songs
-  const recommendations = [
-    { id: 1, title: "Blinding Lights", artist: "The Weeknd" },
-    { id: 2, title: "Levitating", artist: "Dua Lipa" },
-    { id: 3, title: "Good 4 U", artist: "Olivia Rodrigo" },
-    { id: 4, title: "Peaches", artist: "Justin Bieber" },
-    { id: 5, title: "Save Your Tears", artist: "The Weeknd" },
-    { id: 6, title: "Stay", artist: "The Kid LAROI & Justin Bieber" },
-    { id: 7, title: "Montero (Call Me By Your Name)", artist: "Lil Nas X" },
-    { id: 8, title: "Kiss Me More", artist: "Doja Cat ft. SZA" },
-    { id: 9, title: "Industry Baby", artist: "Lil Nas X & Jack Harlow" },
-    { id: 10, title: "Deja Vu", artist: "Olivia Rodrigo" }
-  ];
+  useEffect(() => {
+    getInitial(4)
+    .then((data) => {
+      console.log("RECEIVED",data.initial_recommendations);
+      setInitialRecommendations(data.initial_recommendations);
+    })
+  }, []);
+
+  useEffect(() => {
+    if (likedSongs.length > 0) {
+      console.log("Liked Songs:", likedSongs);
+    }
+  }, [likedSongs]);
+
+  useEffect(() => {
+    localStorage.setItem("likedSongs", JSON.stringify(likedSongs));
+  }, [likedSongs]);
 
   const handlePlayPause = (id) => {
     setIsPlaying(isPlaying === id ? null : id);
   };
 
   const handleLikeToggle = (id) => {
-    if (likedTracks.includes(id)) {
-      setLikedTracks(likedTracks.filter(trackId => trackId !== id));
+    if (likedSongs.includes(id)) {
+      setLikedSongs(likedSongs.filter(trackId => trackId !== id));  // Remove if already liked
     } else {
-      setLikedTracks([...likedTracks, id]);
+      setLikedSongs([...likedSongs, id]);
+    }
+    console.log(likedSongs)
+  };
+
+  const Refresh = async () => {
+    if (likedSongs.length > 0) {
+      // Save liked songs to localStorage
+      localStorage.setItem("likedSongs", JSON.stringify(likedSongs));
+      
+      // Prepare feedback data
+      const user_id = 4;  // Example user_id
+      const feedback = likedSongs.map(songId => ({
+        song_id: songId,
+        reward: 1,  // Assuming all liked songs have reward = 1
+        mood: 'Angry'  // Example mood, replace with dynamic mood if needed
+      }));
+      
+      try {
+        // Call the refreshRecommendations function
+        const data = await refreshRecommendations(user_id, feedback);
+        console.log("REFRESHED", data);
+        setInitialRecommendations(data.new_recommendations);   // Log the refreshed recommendations
+      } catch (error) {
+        console.error("Error during refresh:", error);  // Handle any errors
+      }
+    } else {
+      console.log("No liked songs to refresh.");
+    }
+  };
+  
+  
+  
+
+  return (
+    <div className="music-recommendation">
+      
+      <Typography variant="h4" className="heading">Your recommended songs based on your current mood</Typography>
+      <Typography variant="h6" className="subheading">
+        Hit the like button, if the song resonates with your mood!
+      </Typography>
+      <Button 
+  variant="contained" 
+  color="primary" 
+  className="refresh-btn" 
+  onClick={() => Refresh()}
+>
+  Refresh
+</Button>
+      <div className="recommendation-list">
+        {initialRecommendations.slice(0,5).map((track) => (
+          <Card key={track.track_id} className="track-card">
+            <CardContent className="track-content">
+              <div>
+                <Typography variant="h6" className="track-title">{track.track_name}</Typography>
+                <Typography variant="body2" color="textSecondary" className="track-artist">{track.artist_name}</Typography>
+              </div>
+              <IconButton onClick={() => handlePlayPause(track.track_id)} className="play-btn">
+                {isPlaying === track.track_id ? <PauseIcon /> : <PlayArrowIcon />}
+              </IconButton>
+              <IconButton onClick={() => handleLikeToggle(track.track_id)} className="heart-btn">
+                {/* Conditionally render heart or unheart based on liked state */}
+                {likedSongs.includes(track.track_id) ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+              </IconButton>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// Simple chatbot component
+const Chatbot = () => {
+  const [chatMessages, setChatMessages] = useState([]);
+  const [message, setMessage] = useState("");
+
+  const sendMessage = () => {
+    if (message.trim()) {
+      setChatMessages([...chatMessages, { text: message, sender: "user" }]);
+      
+      setMessage("");
+
+      // Simulate bot response
+      setTimeout(() => {
+        setChatMessages([...chatMessages, { text: message, sender: "user" }, { text: "Hello! How can I assist you?", sender: "bot" }]);
+      }, 1000);
     }
   };
 
   return (
-    <Box sx={{ textAlign: "center", margin: "20px" }}>
-      <Typography variant="h4" className="heading">Your Recommended Songs</Typography>
-      <Typography variant="body1" sx={{ marginBottom: 4 }}>Hit the like button if the song resonates with your mood!</Typography>
-      
-      <Grid container spacing={3} justifyContent="center">
-        {recommendations.map((track) => (
-          <Grid item xs={12} sm={6} md={4} key={track.id}>
-            <Card sx={{ backgroundColor: '#bbd0ff58', borderRadius: '10px' }}>
-              <CardContent sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <Box>
-                  <Typography variant="h6">{track.title}</Typography>
-                  <Typography variant="body2" color="textSecondary">{track.artist}</Typography>
-                </Box>
-                <Box>
-                  <IconButton onClick={() => handlePlayPause(track.id)}>
-                    {isPlaying === track.id ? <PauseIcon /> : <PlayArrowIcon />}
-                  </IconButton>
-                  <IconButton onClick={() => handleLikeToggle(track.id)}>
-                    {likedTracks.includes(track.id) ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-                  </IconButton>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
+    <div className="chatbot">
+      <Typography variant="h6" className="chat-heading">Chat with MusicBot</Typography>
+      <div className="chat-messages">
+        {chatMessages.map((msg, index) => (
+          <div key={index} className={`chat-message ${msg.sender}`}>
+            {msg.text}
+          </div>
         ))}
-      </Grid>
-    </Box>
+      </div>
+      <div className="chat-input">
+        <TextField
+          variant="outlined"
+          placeholder="Type a message..."
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          className="chat-input-field"
+        />
+        <Button
+          onClick={sendMessage}
+          variant="contained"
+          color="primary"
+          className="send-btn"
+          endIcon={<SendIcon />}
+        >
+          Send
+        </Button>
+      </div>
+    </div>
   );
 };
 
-export default MusicRecommendation;
+function Dashboard() {
+  return (
+    <div className="dashboard-container">
+      <div className="music-recommendation-container">
+        <MusicRecommendation />
+      </div>
+
+      <div className="chatbot-container">
+        <Chatbot />
+      </div>
+    </div>
+  );
+}
+
+export default Dashboard;

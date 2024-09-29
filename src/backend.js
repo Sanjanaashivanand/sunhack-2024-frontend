@@ -10,12 +10,14 @@ export const fetchUserProfile = async (token) => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
+      console.log("Scopes: ", data.scope);  // Check scopes here if returned
       return data;
     } catch (error) {
       console.error("Error fetching user profile:", error);
       throw error;
     }
 };
+
 
 export const fetchPlaylist = async (token) => {
     console.log("TOKEN PASSED", token);
@@ -54,10 +56,71 @@ export const getSongs = async (playlistIds, token) =>  {
             token: token
         }),
       })
-      .then(response => response.json())
+      .then(response =>  response.initial_recommendations.json())
       .then(data => console.log(data))
       .catch((error) => console.error('Error:', error));
 }
+
+export const getInitial = async (user_id) => {
+  try {
+    const response = await fetch('http://127.0.0.1:5000/recommendation/initial', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        user_id: user_id
+      }),
+    });
+
+    // Check if the response is successful
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    // Log the raw response for debugging purposes
+    console.log('Raw Response:', response);
+
+    // Parse the response as JSON
+    const data = await response.json();
+    
+    // Log the parsed JSON data
+    console.log('Parsed Data:', data);
+
+    return data;
+  } catch (error) {
+    console.error('Error:', error);
+    return null;
+  }
+};
+
+export const refreshRecommendations = async (user_id, feedback) => {
+  try {
+    const response = await fetch('http://127.0.0.1:5000/recommendation/refresh', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        user_id: user_id,
+        feedback: feedback
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('Recommendations refreshed successfully:', data);
+    return data; // Returning data in case you need to process it further
+  } catch (error) {
+    console.error('Error refreshing recommendations:', error);
+    throw error; // Rethrowing the error if you need to handle it in the caller
+  }
+};
+
+
 
 export const getMood = async (message) => {
   console.log("getting AI response")
